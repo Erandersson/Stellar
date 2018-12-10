@@ -1,0 +1,17 @@
+You are passing the game object as the parameter into the bullet class by
+( public Bullet( double x, double y, Textures tex, Game game )) .
+This basically allows the bullet class to have access to the variables and methods of the game class..
+Isn't this a bad practice?
+
+---
+
+Create a world object to represent your game world and store your lists of entities in there.
+
+You can have appropriate methods to add entities to the world and to retrieve the list.
+
+Create a world object where the lists previously where and pass that instead of your entire game class.
+
+It fits well with OOP paradigm and is really quite simple.﻿
+
+--
+
