@@ -152,7 +152,7 @@ public class Game extends Canvas implements Runnable{
         } else if(key == KeyEvent.VK_DOWN){
             p.setVelY(10);
         } else if(key == KeyEvent.VK_SPACE && !isShooting){
-            c.addEntity(new Bullet(p.getX(),p.getY(),tex, this));
+            c.addEntity(new Bullet(p.getX(),p.getY(),tex, c, this));
             isShooting = true;
         }
     }

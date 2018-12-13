@@ -14,12 +14,14 @@ public class Bullet extends GameObject implements EntityA {
 
     private Textures tex;
     private Game game;
+    private Controller c;
 
     // CONSTRUCTOR
 
-    public Bullet(double x, double y, Textures tex, Game game){
+    public Bullet(double x, double y, Textures tex, Controller c, Game game){
         super(x, y);
         this.tex = tex;
+        this.c = c;
         this.game = game;
     }
 
@@ -27,6 +29,12 @@ public class Bullet extends GameObject implements EntityA {
 
     public void tick(){
         y -= 10;
+        if(y > Game.HEIGHT * Game.SCALE - 54){
+            c.removeEntity(this);
+        }
+        if(Physics.Collision(this, game.eB)){
+            c.removeEntity(this);
+        }
     }
     public void render(Graphics g){
         g.drawImage(tex.bullet, (int)x, (int)y, null);
