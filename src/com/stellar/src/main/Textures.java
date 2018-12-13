@@ -12,7 +12,6 @@ public class Textures {
     // VARIABLES
 
     public BufferedImage player, bullet, enemy;
-
     private SpriteSheet ss;
 
     // CONSTRUCTORS

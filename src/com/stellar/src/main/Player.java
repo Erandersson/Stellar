@@ -1,5 +1,7 @@
 package com.stellar.src.main;
 
+import com.stellar.src.main.classes.EntityA;
+
 import java.awt.*;
 
 /**
@@ -7,20 +9,17 @@ import java.awt.*;
  * In this class is the player bounds is specified.
  */
 
-public class Player {
+public class Player extends GameObject implements EntityA {
 
     // VARIABLES
 
-    private double x, y;
     private double velX = 0, velY = 0;
-
     private Textures tex;
 
     // CONSTRUCTORS
 
     public Player(double x, double y, Textures tex){
-        this.x = x;
-        this.y = y;
+        super(x, y);
         this.tex = tex;
     }
 
@@ -29,7 +28,6 @@ public class Player {
     public void tick(){
         x+=velX;
         y+=velY;
-
         if(x <= 0){
             x = 0;
         }
@@ -43,11 +41,12 @@ public class Player {
             y = 480-88;
         }
     }
-
     public void render(Graphics g){
         g.drawImage(tex.player, (int)x, (int)y, null);
     }
-
+    public Rectangle getBounds(){
+        return new Rectangle((int)x, (int)y, 99, 75);
+    }
     public double getX(){
         return x;
     }
@@ -60,6 +59,4 @@ public class Player {
     public void setVelY(double velY){
         this.velY = velY;
     }
-
-
 }

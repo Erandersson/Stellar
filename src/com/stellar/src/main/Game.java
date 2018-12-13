@@ -1,15 +1,19 @@
 package com.stellar.src.main;
 
+import com.stellar.src.main.classes.*;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.LinkedList;
 
 public class Game extends Canvas implements Runnable{
 
     // VARIABLES
+
     private static final long serialVersionUID = 1L;
     public static final int WIDTH = 320, HEIGHT = WIDTH / 12 * 9, SCALE = 2;
     public final String TITLE = "Stellar 2D Space Game";
@@ -28,7 +32,12 @@ public class Game extends Canvas implements Runnable{
 
     private Player p;
     private Controller c;
+
+    //private World w;
     private Textures tex;
+
+    public LinkedList<EntityA> eA;
+    public LinkedList<EntityB> eB;
 
     // METHODS
 
@@ -44,11 +53,13 @@ public class Game extends Canvas implements Runnable{
         addKeyListener(new KeyInput(this));
         tex = new Textures(this);
         p = new Player(200,200, tex);
-        c = new Controller(tex);
+        c = new Controller(tex, this);
+
+        eA = c.getEntityA();
+        eB = c.getEntityB();
 
         c.createEnemy(enemyCount);
     }
-
     private synchronized void start(){
         if(running){
             return;
@@ -57,7 +68,6 @@ public class Game extends Canvas implements Runnable{
         thread = new Thread(this);
         thread.start();
     }
-
     private synchronized void stop(){
         if(!running){
             return;
@@ -72,6 +82,7 @@ public class Game extends Canvas implements Runnable{
     }
 
     // GAME LOOP
+
     public void run(){
         init();
         long initialTime = System.nanoTime();
@@ -103,12 +114,15 @@ public class Game extends Canvas implements Runnable{
         }
         stop();
     }
-
     private void tick(){
         p.tick();
         c.tick();
+        if(enemyKilled >= enemyCount){
+            enemyCount += 1;
+            enemyKilled = 0;
+            c.createEnemy(enemyCount);
+        }
     }
-
     private void render(){
         BufferStrategy bs = this.getBufferStrategy();
         if (bs == null){
@@ -116,38 +130,34 @@ public class Game extends Canvas implements Runnable{
             return;
         }
         Graphics g = bs.getDrawGraphics();
-        ////
+
         g.drawImage(image, 0, 0, getWidth(), getHeight(), this);
         g.setColor(Color.red);
         g.fillRect(0,0,800,800);
         g.drawImage(background, 0,0,null);
         p.render(g);
         c.render(g);
-        ////
+
         g.dispose();
         bs.show();
     }
-
     public void keyPressed(KeyEvent e){
         int key = e.getKeyCode();
-
         if(key == KeyEvent.VK_RIGHT){
-            p.setVelX(5);
+            p.setVelX(10);
         } else if(key == KeyEvent.VK_LEFT){
-            p.setVelX(-5);
+            p.setVelX(-10);
         } else if(key == KeyEvent.VK_UP){
-            p.setVelY(-5);
+            p.setVelY(-10);
         } else if(key == KeyEvent.VK_DOWN){
-            p.setVelY(5);
+            p.setVelY(10);
         } else if(key == KeyEvent.VK_SPACE && !isShooting){
-            c.addEntity(new Bullet(p.getX(),p.getY(),tex));
+            c.addEntity(new Bullet(p.getX(),p.getY(),tex, this));
             isShooting = true;
         }
     }
-
     public void keyReleased(KeyEvent e){
         int key = e.getKeyCode();
-
         if(key == KeyEvent.VK_RIGHT){
             p.setVelX(0);
         } else if(key == KeyEvent.VK_LEFT){
@@ -160,25 +170,23 @@ public class Game extends Canvas implements Runnable{
             isShooting = false;
         }
     }
-
     public BufferedImage getSpriteSheet(){
         return spriteSheet;
     }
-
     public int getEnemyCount() {
         return enemyCount;
     }
-
     public int getEnemyKilled() {
         return enemyKilled;
     }
-
     public void setEnemyCount(int enemyCount) {
         this.enemyCount = enemyCount;
     }
-
     public void setEnemyKilled(int enemyKilled) {
         this.enemyKilled = enemyKilled;
+    }
+    public Controller getC(){
+        return c;
     }
 
     // MAIN
