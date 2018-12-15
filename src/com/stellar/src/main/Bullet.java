@@ -32,9 +32,6 @@ public class Bullet extends GameObject implements EntityA {
         if(y > Game.HEIGHT * Game.SCALE - 54){
             c.removeEntity(this);
         }
-        if(Physics.Collision(this, game.eB)){
-            c.removeEntity(this);
-        }
     }
     public void render(Graphics g){
         g.drawImage(tex.bullet, (int)x, (int)y, null);

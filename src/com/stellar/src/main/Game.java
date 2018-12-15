@@ -23,7 +23,8 @@ public class Game extends Canvas implements Runnable{
 
     private BufferedImage image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
     private BufferedImage spriteSheet = null;
-    private BufferedImage background = null;
+    private BufferedImage gameBackground = null;
+    private BufferedImage menuBackground = null;
 
     private boolean isShooting = false;
 
@@ -32,28 +33,37 @@ public class Game extends Canvas implements Runnable{
 
     private Player p;
     private Controller c;
-
-    //private World w;
     private Textures tex;
+    private Menu menu;
+    private State state = State.MENU;
 
     public LinkedList<EntityA> eA;
     public LinkedList<EntityB> eB;
 
+
+
     // METHODS
+
+    public void setState(State s){
+        state = s;
+    }
 
     public void init(){
         requestFocus();
         BufferedImageLoader loader = new BufferedImageLoader();
         try{
-            spriteSheet = loader.loadImage("/sprite_sheet.png");
-            background = loader.loadImage("/background.png");
+            spriteSheet = loader.loadImage("/spriteSheet.png");
+            gameBackground = loader.loadImage("/gameBackground.png");
+            menuBackground = loader.loadImage("/menuBackground.png");
         } catch (IOException e){
             e.printStackTrace();
         }
         addKeyListener(new KeyInput(this));
+        addMouseListener(new MouseInput());
         tex = new Textures(this);
         p = new Player(200,200, tex);
         c = new Controller(tex, this);
+        menu = new Menu();
 
         eA = c.getEntityA();
         eB = c.getEntityB();
@@ -115,8 +125,10 @@ public class Game extends Canvas implements Runnable{
         stop();
     }
     private void tick(){
-        p.tick();
-        c.tick();
+        if(state == State.GAME){
+            p.tick();
+            c.tick();
+        }
         if(enemyKilled >= enemyCount){
             enemyCount += 1;
             enemyKilled = 0;
@@ -132,28 +144,37 @@ public class Game extends Canvas implements Runnable{
         Graphics g = bs.getDrawGraphics();
 
         g.drawImage(image, 0, 0, getWidth(), getHeight(), this);
-        g.setColor(Color.red);
+        g.setColor(Color.black);
         g.fillRect(0,0,800,800);
-        g.drawImage(background, 0,0,null);
-        p.render(g);
-        c.render(g);
+
+        if(state == State.GAME){
+            p.render(g);
+            c.render(g);
+            g.drawImage(gameBackground, 0,0,null);
+        }else if(state == State.MENU){
+            menu.render(g);
+            //g.drawImage(menuBackground, 0,0,null);
+        }
 
         g.dispose();
         bs.show();
     }
     public void keyPressed(KeyEvent e){
         int key = e.getKeyCode();
-        if(key == KeyEvent.VK_RIGHT){
-            p.setVelX(10);
-        } else if(key == KeyEvent.VK_LEFT){
-            p.setVelX(-10);
-        } else if(key == KeyEvent.VK_UP){
-            p.setVelY(-10);
-        } else if(key == KeyEvent.VK_DOWN){
-            p.setVelY(10);
-        } else if(key == KeyEvent.VK_SPACE && !isShooting){
-            c.addEntity(new Bullet(p.getX(),p.getY(),tex, c, this));
-            isShooting = true;
+
+        if(state == State.GAME) {
+            if (key == KeyEvent.VK_RIGHT) {
+                p.setVelX(10);
+            } else if (key == KeyEvent.VK_LEFT) {
+                p.setVelX(-10);
+            } else if (key == KeyEvent.VK_UP) {
+                p.setVelY(-10);
+            } else if (key == KeyEvent.VK_DOWN) {
+                p.setVelY(10);
+            } else if (key == KeyEvent.VK_SPACE && !isShooting) {
+                c.addEntity(new Bullet(p.getX(), p.getY(), tex, c, this));
+                isShooting = true;
+            }
         }
     }
     public void keyReleased(KeyEvent e){

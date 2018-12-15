@@ -1,6 +1,6 @@
 package com.stellar.src.main;
 
-import com.stellar.src.main.classes.EntityB;
+import com.stellar.src.main.classes.*;
 import java.awt.*;
 import java.util.Random;
 

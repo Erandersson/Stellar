@@ -30,11 +30,19 @@ public class Controller {
 
     // METHODS
 
+    /**
+     * Creates enemies in-game.
+     * @param enemyCount Integer specifying how many enemies to create.
+     */
     public void createEnemy(int enemyCount){
         for(int i = 0; i < enemyCount; i++){
             addEntity(new Enemy(r.nextInt(Game.WIDTH * Game.SCALE - 93),-84,tex, this, game));
         }
     }
+
+    /**
+     * Calls entities A and B tick methods.
+     */
     public void tick(){
         for (int i = 0; i < eA.size(); i++){
             entA = eA.get(i);
